@@ -1,0 +1,17 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/admin/access/page": "app/admin/access/page.js",
+  "/admin/audit/page": "app/admin/audit/page.js",
+  "/admin/channels/page": "app/admin/channels/page.js",
+  "/admin/integrations/page": "app/admin/integrations/page.js",
+  "/admin/leaderboard/page": "app/admin/leaderboard/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/payouts/page": "app/admin/payouts/page.js",
+  "/affiliate/page": "app/affiliate/page.js",
+  "/api/auth/session/route": "app/api/auth/session/route.js",
+  "/login/page": "app/login/page.js",
+  "/page": "app/page.js",
+  "/partner/page": "app/partner/page.js",
+  "/register/page": "app/register/page.js"
+}

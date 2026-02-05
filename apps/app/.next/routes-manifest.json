@@ -1,0 +1,134 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/admin",
+      "regex": "^/admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin(?:/)?$"
+    },
+    {
+      "page": "/admin/access",
+      "regex": "^/admin/access(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/access(?:/)?$"
+    },
+    {
+      "page": "/admin/audit",
+      "regex": "^/admin/audit(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/audit(?:/)?$"
+    },
+    {
+      "page": "/admin/channels",
+      "regex": "^/admin/channels(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/channels(?:/)?$"
+    },
+    {
+      "page": "/admin/integrations",
+      "regex": "^/admin/integrations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/integrations(?:/)?$"
+    },
+    {
+      "page": "/admin/leaderboard",
+      "regex": "^/admin/leaderboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/leaderboard(?:/)?$"
+    },
+    {
+      "page": "/admin/payouts",
+      "regex": "^/admin/payouts(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/payouts(?:/)?$"
+    },
+    {
+      "page": "/affiliate",
+      "regex": "^/affiliate(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/affiliate(?:/)?$"
+    },
+    {
+      "page": "/api/auth/session",
+      "regex": "^/api/auth/session(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/session(?:/)?$"
+    },
+    {
+      "page": "/login",
+      "regex": "^/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/login(?:/)?$"
+    },
+    {
+      "page": "/partner",
+      "regex": "^/partner(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/partner(?:/)?$"
+    },
+    {
+      "page": "/register",
+      "regex": "^/register(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/register(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

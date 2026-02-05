@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  role          String   @default("affiliate")
+  merchantId    String?
+  affiliateId   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Merchant {
+  id                     String     @id @default(cuid())
+  name                   String
+  website                String
+  defaultCommissionPct   Float
+  programs               Program[]
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @updatedAt
+}
+
+model Affiliate {
+  id            String     @id @default(cuid())
+  displayName   String
+  payoutMethod  String
+  walletAddress String?
+  campaigns     Campaign[]
+  links         Link[]
+  conversions   Conversion[]
+  payouts       Payout[]
+  stats         AffiliateStats?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Program {
+  id                     String     @id @default(cuid())
+  merchantId             String
+  name                   String
+  attributionWindowDays  Int
+  merchant               Merchant   @relation(fields: [merchantId], references: [id])
+  campaigns              Campaign[]
+  links                  Link[]
+  conversions            Conversion[]
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @updatedAt
+}
+
+model Campaign {
+  id            String     @id @default(cuid())
+  programId     String
+  affiliateId   String
+  channel       String
+  budget        Float
+  program       Program    @relation(fields: [programId], references: [id])
+  affiliate     Affiliate  @relation(fields: [affiliateId], references: [id])
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Link {
+  id            String     @id @default(cuid())
+  programId     String
+  affiliateId   String
+  destination   String
+  trackingCode  String     @unique
+  program       Program    @relation(fields: [programId], references: [id])
+  affiliate     Affiliate  @relation(fields: [affiliateId], references: [id])
+  clicks        Click[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Click {
+  id            String     @id @default(cuid())
+  linkId        String
+  ipAddress     String?
+  userAgent     String?
+  link          Link       @relation(fields: [linkId], references: [id])
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Conversion {
+  id            String     @id @default(cuid())
+  programId     String
+  affiliateId   String
+  clickId       String?
+  orderId       String
+  orderTotal    Float
+  currency      String
+  status        String
+  ipAddress     String?
+  userAgent     String?
+  program       Program    @relation(fields: [programId], references: [id])
+  affiliate     Affiliate  @relation(fields: [affiliateId], references: [id])
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model AffiliateStats {
+  id            String   @id @default(cuid())
+  affiliateId   String   @unique
+  totalEarnings Float    @default(0)
+  totalClicks   Int      @default(0)
+  totalConversions Int   @default(0)
+  tier          String   @default("bronze")
+  streak        Int      @default(0)
+  badges        String[] @default([])
+  affiliate     Affiliate @relation(fields: [affiliateId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model IntegrationConnection {
+  id            String   @id @default(cuid())
+  channelId     String
+  merchantId    String
+  provider      String
+  status        String   @default("pending")
+  accessToken   String?
+  refreshToken  String?
+  expiresAt     DateTime?
+  metadata      String?
+  channel       Channel  @relation(fields: [channelId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
+
+model Payout {
+  id            String     @id @default(cuid())
+  affiliateId   String
+  amount        Float
+  currency      String
+  status        String
+  holdUntil     DateTime?
+  affiliate     Affiliate  @relation(fields: [affiliateId], references: [id])
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Channel {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  status      String
+  provider    String?
+  connections IntegrationConnection[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([name])
+}
+
+model CreativeTool {
+  id        String   @id @default(cuid())
+  name      String
+  type      String
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name])
+}

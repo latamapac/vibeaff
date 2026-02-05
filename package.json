@@ -1,0 +1,25 @@
+{
+  "name": "vibeaff",
+  "version": "1.0.0",
+  "description": "VibeAff monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm --workspace apps/api run dev",
+    "build:api": "npm --workspace apps/api run build",
+    "dev:landing": "npm --workspace apps/landing run dev",
+    "build:landing": "npm --workspace apps/landing run build",
+    "dev:app": "npm --workspace apps/app run dev",
+    "build:app": "npm --workspace apps/app run build",
+    "dev:docs": "npm --workspace apps/docs run dev",
+    "build:docs": "npm --workspace apps/docs run build",
+    "dev:web": "npm --workspace apps/web run dev",
+    "build:web": "npm --workspace apps/web run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

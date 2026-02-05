@@ -1,0 +1,17 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/admin/access/page": "/admin/access",
+  "/admin/audit/page": "/admin/audit",
+  "/admin/channels/page": "/admin/channels",
+  "/admin/integrations/page": "/admin/integrations",
+  "/admin/leaderboard/page": "/admin/leaderboard",
+  "/admin/page": "/admin",
+  "/admin/payouts/page": "/admin/payouts",
+  "/affiliate/page": "/affiliate",
+  "/api/auth/session/route": "/api/auth/session",
+  "/login/page": "/login",
+  "/page": "/",
+  "/partner/page": "/partner",
+  "/register/page": "/register"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@vibeaff/sdk",
+  "version": "0.1.0",
+  "description": "VibeAff integration SDK",
+  "main": "index.js",
+  "bin": {
+    "vibeaff-init": "./cli.js"
+  },
+  "scripts": {
+    "lint": "node -c cli.js"
+  },
+  "keywords": [
+    "vibeaff",
+    "affiliate",
+    "tracking"
+  ],
+  "author": "",
+  "license": "MIT"
+}
