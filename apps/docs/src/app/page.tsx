@@ -803,7 +803,7 @@ function allEndpointsFlat() {
    ================================================================ */
 export default function DeveloperPortal() {
   /* ── state ───────────────────────────────────────── */
-  const [matrix, setMatrix] = useState(false);
+  const [matrix, setMatrix] = useState(true);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [activeId, setActiveId] = useState("");
   const [search, setSearch] = useState("");
@@ -824,7 +824,7 @@ export default function DeveloperPortal() {
   /* ── persist matrix mode ─────────────────────────── */
   useEffect(() => {
     const saved = localStorage.getItem("vibeaff_matrix");
-    if (saved === "true") setMatrix(true);
+    if (saved !== null) setMatrix(saved === "true");
   }, []);
   useEffect(() => {
     localStorage.setItem("vibeaff_matrix", String(matrix));
@@ -946,11 +946,12 @@ export default function DeveloperPortal() {
   /* ── theme vars ──────────────────────────────────── */
   const t = {
     bg: matrix ? "bg-black" : "bg-zinc-950",
-    text: matrix ? "text-green-400" : "text-zinc-100",
-    muted: matrix ? "text-green-400/60" : "text-zinc-400",
+    text: matrix ? "text-white" : "text-zinc-100",
+    muted: matrix ? "text-zinc-300" : "text-zinc-400",
     sidebarBg: matrix ? "bg-black/90" : "bg-zinc-900",
-    border: matrix ? "border-green-500/20" : "border-zinc-800",
-    cardBg: matrix ? "bg-black/60" : "bg-zinc-900/50",
+    chromeBorder: matrix ? "border-emerald-500/30" : "border-zinc-800",
+    border: matrix ? "border-emerald-500/20" : "border-zinc-800",
+    cardBg: matrix ? "bg-black/90" : "bg-zinc-900/50",
     codeBg: matrix ? "bg-green-950/30" : "bg-zinc-900",
     hover: matrix ? "hover:bg-green-500/10" : "hover:bg-zinc-800",
     activeSidebar: matrix ? "bg-green-500/15 text-green-300" : "bg-zinc-800 text-white",
@@ -961,13 +962,14 @@ export default function DeveloperPortal() {
   return (
     <div className={`min-h-screen ${t.bg} ${t.text} ${matrix ? "matrix-mode" : ""}`}>
       <MatrixRain visible={matrix} />
+      {matrix && <div className="fixed inset-0 bg-black/80 z-[1] pointer-events-none" />}
 
       {/* ── SIDEBAR ────────────────────────────────── */}
       <aside
-        className={`fixed top-0 left-0 z-30 h-screen w-[260px] ${t.sidebarBg} border-r ${t.border} backdrop-blur-md flex flex-col overflow-hidden`}
+        className={`fixed top-0 left-0 z-30 h-screen w-[260px] ${t.sidebarBg} border-r ${t.chromeBorder} backdrop-blur-md flex flex-col overflow-hidden`}
       >
         {/* logo */}
-        <div className={`px-5 py-5 border-b ${t.border} flex-shrink-0`}>
+        <div className={`px-5 py-5 border-b ${t.chromeBorder} flex-shrink-0`}>
           <h1 className="text-lg font-bold tracking-tight">VibeAff API</h1>
           <p className={`text-xs mt-0.5 ${t.muted}`}>Developer Documentation</p>
         </div>
@@ -1056,7 +1058,7 @@ export default function DeveloperPortal() {
 
       {/* ── TOP BAR ────────────────────────────────── */}
       <header
-        className={`fixed top-0 left-[260px] right-0 z-20 h-14 ${t.sidebarBg} border-b ${t.border} backdrop-blur-md flex items-center justify-between px-6`}
+        className={`fixed top-0 left-[260px] right-0 z-20 h-14 ${t.sidebarBg} border-b ${t.chromeBorder} backdrop-blur-md flex items-center justify-between px-6`}
       >
         {/* search */}
         <div className="relative flex-1 max-w-md">
@@ -1118,11 +1120,11 @@ export default function DeveloperPortal() {
       </header>
 
       {/* ── MAIN CONTENT ───────────────────────────── */}
-      <main ref={mainRef} className="ml-[260px] pt-14">
+      <main ref={mainRef} className="ml-[260px] pt-14 relative z-10">
         <div className="max-w-4xl mx-auto px-8 py-10">
           {/* ── OVERVIEW ─────────────────────────────── */}
           <section id="overview" data-endpoint-section className="mb-16">
-            <h2 className={`text-3xl font-bold mb-2 ${matrix ? "text-green-400" : "text-white"}`}>
+            <h2 className="text-3xl font-bold mb-2 text-white">
               VibeAff API Reference
             </h2>
             <p className={`text-base mb-8 ${t.muted}`}>
@@ -1170,9 +1172,7 @@ export default function DeveloperPortal() {
           {filteredGroups.map((group) => (
             <section key={group.slug} className="mb-14">
               <h2
-                className={`text-2xl font-bold mb-6 pb-2 border-b ${t.border} ${
-                  matrix ? "text-green-400" : "text-white"
-                }`}
+                className={`text-2xl font-bold mb-6 pb-2 border-b ${t.border} text-white`}
               >
                 {group.label}
               </h2>
@@ -1241,7 +1241,7 @@ export default function DeveloperPortal() {
           {/* ── API PLAYGROUND ────────────────────────── */}
           <section id="playground" data-endpoint-section className="mb-20 scroll-mt-20">
             <div className="flex items-center justify-between mb-6">
-              <h2 className={`text-2xl font-bold ${matrix ? "text-green-400" : "text-white"}`}>
+              <h2 className="text-2xl font-bold text-white">
                 API Playground
               </h2>
               <button

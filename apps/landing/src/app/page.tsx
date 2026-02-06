@@ -1,10 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+
+const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://app.vibeaff.com";
 
 export default function Home() {
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
+  const [showDemo, setShowDemo] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
@@ -34,6 +38,8 @@ export default function Home() {
     };
   }, []);
 
+  const socialProofLetters = ["A", "B", "C", "D", "E", "F"];
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white relative overflow-hidden">
       {/* Floating Blobs */}
@@ -55,7 +61,9 @@ export default function Home() {
             <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
               VibeAff
             </Link>
-            <div className="flex items-center gap-8">
+
+            {/* Desktop nav */}
+            <div className="hidden md:flex items-center gap-8">
               <Link href="#how-it-works" className="hover:text-purple-400 transition-colors">
                 How it works
               </Link>
@@ -82,7 +90,75 @@ export default function Home() {
                 Launch App
               </Link>
             </div>
+
+            {/* Mobile hamburger button */}
+            <button
+              className="md:hidden flex flex-col justify-center items-center gap-1.5 w-10 h-10 rounded-lg hover:bg-white/10 transition-colors"
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              aria-label="Toggle menu"
+            >
+              <span
+                className={`block h-0.5 w-6 bg-white transition-all duration-300 ${
+                  mobileMenuOpen ? "translate-y-2 rotate-45" : ""
+                }`}
+              />
+              <span
+                className={`block h-0.5 w-6 bg-white transition-all duration-300 ${
+                  mobileMenuOpen ? "opacity-0" : ""
+                }`}
+              />
+              <span
+                className={`block h-0.5 w-6 bg-white transition-all duration-300 ${
+                  mobileMenuOpen ? "-translate-y-2 -rotate-45" : ""
+                }`}
+              />
+            </button>
           </nav>
+
+          {/* Mobile dropdown menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-white/10 bg-[#0a0a0a]/95 backdrop-blur-sm px-6 py-4 space-y-3">
+              <Link
+                href="#how-it-works"
+                className="block py-2 hover:text-purple-400 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                How it works
+              </Link>
+              <Link
+                href="#benefits"
+                className="block py-2 hover:text-purple-400 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Benefits
+              </Link>
+              <Link
+                href="#pricing"
+                className="block py-2 hover:text-purple-400 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Pricing
+              </Link>
+              <Link
+                href="https://docs.vibeaff.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block py-2 hover:text-purple-400 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Developers
+              </Link>
+              <Link
+                href="https://app.vibeaff.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-2 px-6 py-2 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 rounded-xl hover:shadow-lg hover:shadow-purple-500/50 transition-all font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Launch App
+              </Link>
+            </div>
+          )}
         </header>
 
         {/* Hero Section */}
@@ -104,7 +180,10 @@ export default function Home() {
             >
               Get started free
             </Link>
-            <button className="px-8 py-4 border-2 border-purple-500/50 rounded-xl hover:bg-purple-500/10 transition-all font-semibold text-lg">
+            <button
+              className="px-8 py-4 border-2 border-purple-500/50 rounded-xl hover:bg-purple-500/10 transition-all font-semibold text-lg"
+              onClick={() => setShowDemo(true)}
+            >
               Watch demo
             </button>
           </div>
@@ -301,9 +380,14 @@ export default function Home() {
                 <li>• Standard tracking</li>
                 <li>• Email support</li>
               </ul>
-              <button className="w-full px-6 py-3 border border-white/20 rounded-xl hover:bg-white/5 transition-colors font-semibold">
+              <Link
+                href={`${appUrl}/register`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full px-6 py-3 border border-white/20 rounded-xl hover:bg-white/5 transition-colors font-semibold text-center"
+              >
                 Get started
-              </button>
+              </Link>
             </div>
             <div className="relative rounded-2xl p-[2px] bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500">
               <div className="bg-[#0a0a0a] rounded-2xl p-8 h-full">
@@ -320,9 +404,12 @@ export default function Home() {
                   <li>• Custom creatives</li>
                   <li>• Priority support</li>
                 </ul>
-                <button className="w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl hover:shadow-lg hover:shadow-purple-500/50 transition-all font-semibold">
+                <a
+                  href="mailto:sales@vibeaff.com"
+                  className="block w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl hover:shadow-lg hover:shadow-purple-500/50 transition-all font-semibold text-center"
+                >
                   Contact sales
-                </button>
+                </a>
               </div>
             </div>
             <div className="relative rounded-2xl p-8 bg-gradient-to-br from-zinc-900/50 to-transparent border border-white/10">
@@ -336,9 +423,12 @@ export default function Home() {
                 <li>• Custom integrations</li>
                 <li>• 24/7 support</li>
               </ul>
-              <button className="w-full px-6 py-3 border border-white/20 rounded-xl hover:bg-white/5 transition-colors font-semibold">
+              <a
+                href="mailto:sales@vibeaff.com"
+                className="block w-full px-6 py-3 border border-white/20 rounded-xl hover:bg-white/5 transition-colors font-semibold text-center"
+              >
                 Contact sales
-              </button>
+              </a>
             </div>
           </div>
         </section>
@@ -356,12 +446,12 @@ export default function Home() {
             Trusted by teams worldwide
           </h2>
           <div className="flex justify-center gap-8 mb-16 flex-wrap">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+            {socialProofLetters.map((letter) => (
               <div
-                key={i}
-                className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 flex items-center justify-center text-2xl font-bold"
+                key={letter}
+                className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 flex items-center justify-center text-2xl font-bold text-purple-300"
               >
-                {i}
+                {letter}
               </div>
             ))}
           </div>
@@ -403,6 +493,41 @@ export default function Home() {
           </div>
         </footer>
       </div>
+
+      {/* Demo Modal */}
+      {showDemo && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          onClick={() => setShowDemo(false)}
+        >
+          <div
+            className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-zinc-900 p-8 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute right-4 top-4 text-zinc-400 hover:text-white transition-colors"
+              onClick={() => setShowDemo(false)}
+              aria-label="Close"
+            >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <h2 className="text-2xl font-bold text-white mb-6">See VibeAff in action</h2>
+            {/* Placeholder video area */}
+            <div className="flex aspect-video w-full items-center justify-center rounded-xl bg-zinc-800 border border-white/5">
+              <svg
+                className="h-16 w-16 text-zinc-500"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+            <p className="mt-4 text-center text-sm text-zinc-400">Coming soon</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

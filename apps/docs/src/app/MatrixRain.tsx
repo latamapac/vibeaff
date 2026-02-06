@@ -36,7 +36,7 @@ export default function MatrixRain({ visible }: MatrixRainProps) {
     const drops: number[] = Array.from({ length: cols }, () => Math.random() * -80);
 
     let last = 0;
-    const interval = 50; // ms between frames → slower than default rAF
+    const interval = 80; // ms between frames → slower, more subtle
 
     const draw = (ts: number) => {
       if (!visible) return;
@@ -51,19 +51,19 @@ export default function MatrixRain({ visible }: MatrixRainProps) {
       ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = "#4ade80"; // muted green
+      ctx.fillStyle = "#22c55e"; // muted green
       ctx.font = `${fontSize}px monospace`;
 
       for (let i = 0; i < drops.length; i++) {
-        // Skip ~40% of columns each frame → lower density
-        if (Math.random() < 0.4) continue;
+        // Skip ~70% of columns each frame → lower density
+        if (Math.random() > 0.3) continue;
 
         const char = charArr[Math.floor(Math.random() * charArr.length)];
         const x = i * fontSize;
         const y = drops[i]! * fontSize;
 
-        // Slight opacity variation for depth
-        ctx.globalAlpha = 0.3 + Math.random() * 0.4;
+        // Subtle fixed opacity
+        ctx.globalAlpha = 0.3;
         ctx.fillText(char, x, y);
         ctx.globalAlpha = 1;
 

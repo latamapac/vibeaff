@@ -1,19 +1,12 @@
 {
   "name": "@vibeaff/sdk",
-  "version": "0.1.0",
-  "description": "VibeAff integration SDK",
-  "main": "index.js",
-  "bin": {
-    "vibeaff-init": "./cli.js"
-  },
-  "scripts": {
-    "lint": "node -c cli.js"
-  },
-  "keywords": [
-    "vibeaff",
-    "affiliate",
-    "tracking"
-  ],
-  "author": "",
+  "version": "1.0.0",
+  "description": "VibeAff affiliate tracking SDK - one-command integration",
+  "main": "dist/node.js",
+  "browser": "dist/browser.js",
+  "bin": { "vibeaff-init": "./bin/init.js" },
+  "files": ["dist", "bin"],
+  "scripts": { "build": "echo 'SDK ready'" },
+  "keywords": ["vibeaff", "affiliate", "tracking", "attribution"],
   "license": "MIT"
 }
