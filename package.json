@@ -15,9 +15,7 @@
     "dev:app": "npm --workspace apps/app run dev",
     "build:app": "npm --workspace apps/app run build",
     "dev:docs": "npm --workspace apps/docs run dev",
-    "build:docs": "npm --workspace apps/docs run build",
-    "dev:web": "npm --workspace apps/web run dev",
-    "build:web": "npm --workspace apps/web run build"
+    "build:docs": "npm --workspace apps/docs run build"
   },
   "keywords": [],
   "author": "",

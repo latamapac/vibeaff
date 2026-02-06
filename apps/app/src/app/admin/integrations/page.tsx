@@ -1,9 +1,9 @@
 import CreativeToolManager from "../creative-tools/CreativeToolManager";
 
-const statusStyles: Record<string, string> = {
-  connected: "text-emerald-300 bg-emerald-500/20",
-  ready: "text-sky-300 bg-sky-500/20",
-  planned: "text-zinc-300 bg-white/10",
+const statusBadge: Record<string, string> = {
+  connected: "badge-success",
+  ready: "badge-info",
+  planned: "badge-neutral",
 };
 
 type IntegrationItem = {
@@ -24,22 +24,22 @@ const fallbackIntegrations: IntegrationItem[] = [
 export default function Integrations() {
   const adIntegrations = fallbackIntegrations;
   return (
-    <div className="space-y-8">
-      <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-        <h1 className="text-lg font-semibold">Advertising integrations</h1>
-        <p className="mt-3 text-sm text-zinc-400">
+    <div className="space-y-6">
+      <section className="glass-card p-6">
+        <h1 className="section-header text-lg">Advertising integrations</h1>
+        <p className="mt-3 text-sm text-[#8B8B9E]">
           Connect major ad networks and specialized traffic sources to sync performance.
         </p>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className="mt-6 grid gap-3 md:grid-cols-2">
           {adIntegrations.map((integration) => (
-            <div key={integration.id ?? integration.name} className="rounded-xl border border-white/10 bg-black/30 p-4">
-              <div className="flex items-center justify-between">
-                <div className="text-white">{integration.name}</div>
-                <span className={`rounded-full px-3 py-1 text-xs ${statusStyles[integration.status]}`}>
+            <div key={integration.id ?? integration.name} className="table-row flex-col !items-start gap-2">
+              <div className="flex items-center justify-between w-full">
+                <span className="text-[#F6F6F7] font-medium">{integration.name}</span>
+                <span className={`badge ${statusBadge[integration.status]}`}>
                   {integration.status.charAt(0).toUpperCase() + integration.status.slice(1)}
                 </span>
               </div>
-              <p className="mt-2 text-sm text-zinc-300">{integration.description}</p>
+              <p className="text-xs text-[#8B8B9E]">{integration.description}</p>
             </div>
           ))}
         </div>

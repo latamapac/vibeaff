@@ -23,36 +23,66 @@ model Merchant {
   name                   String
   website                String
   defaultCommissionPct   Float
+  stripeAccountId        String?
   programs               Program[]
+  listings               MarketplaceListing[]
   createdAt              DateTime   @default(now())
   updatedAt              DateTime   @updatedAt
 }
 
 model Affiliate {
-  id            String     @id @default(cuid())
-  displayName   String
-  payoutMethod  String
-  walletAddress String?
-  campaigns     Campaign[]
-  links         Link[]
-  conversions   Conversion[]
-  payouts       Payout[]
-  stats         AffiliateStats?
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id               String              @id @default(cuid())
+  displayName      String
+  payoutMethod     String
+  walletAddress    String?
+  stripeAccountId  String?
+  referralCode     String?             @unique
+  referredById     String?
+  campaigns        Campaign[]
+  links            Link[]
+  conversions      Conversion[]
+  payouts          Payout[]
+  stats            AffiliateStats?
+  enrollments      ProgramEnrollment[]
+  commissionRules  CommissionRule[]
+  promoCodes       PromoCode[]
+  reviews          MarketplaceReview[]
+  referrals        AffiliateReferral[] @relation("Referrer")
+  referredBy       AffiliateReferral?  @relation("Referred")
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+}
+
+model AffiliateReferral {
+  id              String    @id @default(cuid())
+  referrerId      String
+  referredId      String    @unique
+  bonusPct        Float     @default(5)
+  totalBonusEarned Float    @default(0)
+  status          String    @default("active")
+  referrer        Affiliate @relation("Referrer", fields: [referrerId], references: [id])
+  referred        Affiliate @relation("Referred", fields: [referredId], references: [id])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 model Program {
-  id                     String     @id @default(cuid())
+  id                     String               @id @default(cuid())
   merchantId             String
   name                   String
   attributionWindowDays  Int
-  merchant               Merchant   @relation(fields: [merchantId], references: [id])
+  approvalMode           String               @default("auto")
+  attributionModel       String               @default("last_click")
+  merchant               Merchant             @relation(fields: [merchantId], references: [id])
   campaigns              Campaign[]
   links                  Link[]
   conversions            Conversion[]
-  createdAt              DateTime   @default(now())
-  updatedAt              DateTime   @updatedAt
+  enrollments            ProgramEnrollment[]
+  commissionRules        CommissionRule[]
+  promoCodes             PromoCode[]
+  listing                MarketplaceListing?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
 }
 
 model Campaign {
@@ -73,9 +103,19 @@ model Link {
   affiliateId   String
   destination   String
   trackingCode  String     @unique
+  label         String?
+  tags          String[]   @default([])
+  utmSource     String?
+  utmMedium     String?
+  utmCampaign   String?
+  utmContent    String?
+  utmTerm       String?
+  status        String     @default("active")
+  shortCode     String?    @unique
   program       Program    @relation(fields: [programId], references: [id])
   affiliate     Affiliate  @relation(fields: [affiliateId], references: [id])
   clicks        Click[]
+  smartRules    SmartLinkRule[]
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 }
@@ -91,20 +131,55 @@ model Click {
 }
 
 model Conversion {
-  id            String     @id @default(cuid())
-  programId     String
-  affiliateId   String
-  clickId       String?
-  orderId       String
-  orderTotal    Float
-  currency      String
-  status        String
-  ipAddress     String?
-  userAgent     String?
-  program       Program    @relation(fields: [programId], references: [id])
-  affiliate     Affiliate  @relation(fields: [affiliateId], references: [id])
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id               String      @id @default(cuid())
+  programId        String
+  affiliateId      String
+  clickId          String?
+  promoCodeId      String?
+  orderId          String
+  orderTotal       Float
+  currency         String
+  commissionPct    Float       @default(0)
+  commissionAmount Float       @default(0)
+  status           String
+  payoutId         String?
+  ipAddress        String?
+  userAgent        String?
+  program          Program     @relation(fields: [programId], references: [id])
+  affiliate        Affiliate   @relation(fields: [affiliateId], references: [id])
+  payout           Payout?     @relation(fields: [payoutId], references: [id])
+  promoCode        PromoCode?  @relation(fields: [promoCodeId], references: [id])
+  recurringParentId String?
+  isRecurring      Boolean     @default(false)
+  recurringIndex   Int         @default(0)
+  subscriptionId   String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@index([subscriptionId])
+}
+
+model PromoCode {
+  id              String       @id @default(cuid())
+  code            String       @unique
+  programId       String
+  affiliateId     String?
+  discountType    String       @default("percentage")
+  discountValue   Float
+  currency        String?
+  minOrderTotal   Float?
+  maxUses         Int?
+  currentUses     Int          @default(0)
+  maxUsesPerUser  Int?
+  startsAt        DateTime?
+  expiresAt       DateTime?
+  status          String       @default("active")
+  metadata        Json?
+  program         Program      @relation(fields: [programId], references: [id])
+  affiliate       Affiliate?   @relation(fields: [affiliateId], references: [id])
+  conversions     Conversion[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 }
 
 model AffiliateStats {
@@ -148,15 +223,17 @@ model AuditLog {
 }
 
 model Payout {
-  id            String     @id @default(cuid())
-  affiliateId   String
-  amount        Float
-  currency      String
-  status        String
-  holdUntil     DateTime?
-  affiliate     Affiliate  @relation(fields: [affiliateId], references: [id])
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id              String       @id @default(cuid())
+  affiliateId     String
+  amount          Float
+  currency        String
+  status          String
+  holdUntil       DateTime?
+  stripeTransferId String?
+  affiliate       Affiliate    @relation(fields: [affiliateId], references: [id])
+  conversions     Conversion[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 }
 
 model Channel {
@@ -181,4 +258,179 @@ model CreativeTool {
   updatedAt DateTime @updatedAt
 
   @@unique([name])
+}
+
+model CommissionRule {
+  id          String    @id @default(cuid())
+  programId   String
+  affiliateId String?
+  type        String    @default("percentage")
+  value       Float?
+  tiers       Json?
+  priority    Int       @default(0)
+  startsAt    DateTime?
+  expiresAt   DateTime?
+  program     Program   @relation(fields: [programId], references: [id])
+  affiliate   Affiliate? @relation(fields: [affiliateId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ProgramEnrollment {
+  id          String    @id @default(cuid())
+  programId   String
+  affiliateId String
+  status      String    @default("pending")
+  note        String?
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  program     Program   @relation(fields: [programId], references: [id])
+  affiliate   Affiliate @relation(fields: [affiliateId], references: [id])
+  appliedAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([programId, affiliateId])
+}
+
+model WebhookEndpoint {
+  id          String            @id @default(cuid())
+  merchantId  String
+  url         String
+  secret      String
+  events      String[]          @default([])
+  status      String            @default("active")
+  deliveries  WebhookDelivery[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model WebhookDelivery {
+  id          String           @id @default(cuid())
+  endpointId  String
+  event       String
+  payload     Json
+  statusCode  Int?
+  attempts    Int              @default(0)
+  maxAttempts Int              @default(3)
+  nextRetryAt DateTime?
+  status      String           @default("pending")
+  lastError   String?
+  endpoint    WebhookEndpoint  @relation(fields: [endpointId], references: [id])
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  merchantId  String
+  name        String
+  prefix      String
+  keyHash     String
+  lastUsedAt  DateTime?
+  status      String    @default("active")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model DailyStats {
+  id            String   @id @default(cuid())
+  date          DateTime @db.Date
+  programId     String   @default("")
+  affiliateId   String   @default("")
+  merchantId    String   @default("")
+  clicks        Int      @default(0)
+  conversions   Int      @default(0)
+  revenue       Float    @default(0)
+  commission    Float    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([date, programId, affiliateId, merchantId])
+}
+
+model TouchPoint {
+  id            String   @id @default(cuid())
+  sessionId     String
+  affiliateId   String
+  programId     String
+  linkId        String?
+  promoCodeId   String?
+  type          String
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+
+  @@index([sessionId])
+  @@index([programId, sessionId])
+}
+
+model SmartLinkRule {
+  id            String   @id @default(cuid())
+  linkId        String
+  conditions    Json
+  destination   String
+  priority      Int      @default(0)
+  link          Link     @relation(fields: [linkId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model MarketplaceCategory {
+  id          String               @id @default(cuid())
+  name        String               @unique
+  slug        String               @unique
+  description String?
+  iconUrl     String?
+  parentId    String?
+  parent      MarketplaceCategory? @relation("CategoryTree", fields: [parentId], references: [id])
+  children    MarketplaceCategory[] @relation("CategoryTree")
+  sortOrder   Int                  @default(0)
+  listings    MarketplaceListing[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+
+model MarketplaceListing {
+  id                  String              @id @default(cuid())
+  programId           String              @unique
+  merchantId          String
+  title               String
+  description         String
+  longDescription     String?
+  categoryId          String
+  tags                String[]            @default([])
+  logoUrl             String?
+  bannerUrl           String?
+  commissionDisplay   String
+  avgEpc              Float?
+  avgConversionRate   Float?
+  cookieWindowDays    Int                 @default(30)
+  payoutFrequency     String?
+  minPayout           Float?
+  supportedRegions    String[]            @default([])
+  supportedChannels   String[]            @default([])
+  featured            Boolean             @default(false)
+  verified            Boolean             @default(false)
+  status              String              @default("draft")
+  category            MarketplaceCategory @relation(fields: [categoryId], references: [id])
+  program             Program             @relation(fields: [programId], references: [id])
+  merchant            Merchant            @relation(fields: [merchantId], references: [id])
+  reviews             MarketplaceReview[]
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+}
+
+model MarketplaceReview {
+  id          String             @id @default(cuid())
+  listingId   String
+  affiliateId String
+  rating      Int
+  title       String?
+  body        String?
+  listing     MarketplaceListing @relation(fields: [listingId], references: [id])
+  affiliate   Affiliate          @relation(fields: [affiliateId], references: [id])
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@unique([listingId, affiliateId])
 }

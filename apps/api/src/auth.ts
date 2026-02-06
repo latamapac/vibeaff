@@ -4,6 +4,15 @@ import bcrypt from "bcryptjs";
 
 const JWT_SECRET = process.env.JWT_SECRET ?? "vibeaff-dev-secret-change-in-production";
 
+// Warn loudly if using the default secret
+if (JWT_SECRET === "vibeaff-dev-secret-change-in-production" || JWT_SECRET === "change-me-in-production") {
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("FATAL: JWT_SECRET must be set to a strong secret in production. Refusing to start.");
+  }
+  // eslint-disable-next-line no-console
+  console.warn("WARNING: Using default JWT_SECRET. Set a strong secret before deploying to production.");
+}
+
 export type UserPayload = {
   userId: string;
   email: string;

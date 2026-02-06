@@ -132,11 +132,13 @@ export default function LoginPage() {
           </Link>
         </p>
 
-        <div className="mt-6 rounded-xl border border-dashed border-white/20 bg-white/5 px-4 py-3">
-          <p className="text-center text-xs text-zinc-500">
-            Demo access: <span className="font-mono text-zinc-400">admin@vibeaff.com</span> / <span className="font-mono text-zinc-400">admin</span>
-          </p>
-        </div>
+        {process.env.NODE_ENV === "development" && (
+          <div className="mt-6 rounded-xl border border-dashed border-white/20 bg-white/5 px-4 py-3">
+            <p className="text-center text-xs text-zinc-500">
+              Demo access: <span className="font-mono text-zinc-400">admin@vibeaff.com</span> / <span className="font-mono text-zinc-400">admin</span>
+            </p>
+          </div>
+        )}
       </form>
     </div>
   );

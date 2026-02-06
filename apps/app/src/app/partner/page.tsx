@@ -7,8 +7,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 interface MerchantData {
   id: string;
   name: string;
-  websiteUrl: string;
-  defaultCommission: number;
+  website: string;
+  defaultCommissionPct: number;
 }
 
 interface ProgramData {
@@ -71,8 +71,8 @@ export default function PartnerToolkit() {
 
   // Step 1 fields
   const [merchantName, setMerchantName] = useState("");
-  const [websiteUrl, setWebsiteUrl] = useState("");
-  const [defaultCommission, setDefaultCommission] = useState("10");
+  const [website, setWebsite] = useState("");
+  const [defaultCommissionPct, setDefaultCommissionPct] = useState("10");
 
   // Step 2 fields
   const [programName, setProgramName] = useState("");
@@ -92,8 +92,8 @@ export default function PartnerToolkit() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: merchantName,
-          websiteUrl,
-          defaultCommission: parseFloat(defaultCommission),
+          website,
+          defaultCommissionPct: parseFloat(defaultCommissionPct),
         }),
       });
       if (!res.ok) {
@@ -218,8 +218,8 @@ export default function PartnerToolkit() {
               <input
                 type="url"
                 required
-                value={websiteUrl}
-                onChange={(e) => setWebsiteUrl(e.target.value)}
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
                 className="w-full rounded-lg border border-white/10 bg-zinc-900 px-4 py-2.5 text-white placeholder-zinc-600 outline-none focus:border-blue-500 transition-colors"
                 placeholder="https://acme.com"
               />
@@ -233,8 +233,8 @@ export default function PartnerToolkit() {
                 min="0"
                 max="100"
                 step="0.1"
-                value={defaultCommission}
-                onChange={(e) => setDefaultCommission(e.target.value)}
+                value={defaultCommissionPct}
+                onChange={(e) => setDefaultCommissionPct(e.target.value)}
                 className="w-full rounded-lg border border-white/10 bg-zinc-900 px-4 py-2.5 text-white placeholder-zinc-600 outline-none focus:border-blue-500 transition-colors"
               />
             </div>
@@ -326,11 +326,11 @@ export default function PartnerToolkit() {
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-zinc-400">Website</dt>
-                    <dd className="font-medium text-white">{merchant.websiteUrl}</dd>
+                    <dd className="font-medium text-white">{merchant.website}</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-zinc-400">Commission</dt>
-                    <dd className="font-medium text-white">{merchant.defaultCommission}%</dd>
+                    <dd className="font-medium text-white">{merchant.defaultCommissionPct}%</dd>
                   </div>
                 </dl>
               </div>

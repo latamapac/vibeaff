@@ -2,6 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 
 const PUBLIC_PATHS = ["/login", "/register", "/api"];
 
+function isTokenStructureValid(token: string): boolean {
+  // JWT has 3 base64url parts separated by dots
+  const parts = token.split(".");
+  if (parts.length !== 3) return false;
+  try {
+    // Decode the payload (middle part) and check expiration
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, "+").replace(/_/g, "/")));
+    if (payload.exp && payload.exp * 1000 < Date.now()) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -18,7 +32,7 @@ export function middleware(request: NextRequest) {
   // Check for auth cookie on protected paths
   const token = request.cookies.get("vibeaff_token")?.value;
 
-  if (!token) {
+  if (!token || !isTokenStructureValid(token)) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("from", pathname);
     return NextResponse.redirect(loginUrl);

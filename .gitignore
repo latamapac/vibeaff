@@ -1,8 +1,12 @@
 node_modules
 dist
+.next
 .env
 .env.local
 *.log
 coverage
 *.sqlite
 *.db
+.DS_Store
+tsconfig.tsbuildinfo
+.vercel

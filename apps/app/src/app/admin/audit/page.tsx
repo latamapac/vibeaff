@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+
 type AuditEntry = {
   id: string;
   userId: string | null;
@@ -9,36 +13,46 @@ type AuditEntry = {
   createdAt: string;
 };
 
-async function loadAuditLogs(): Promise<AuditEntry[]> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
-  try {
-    const res = await fetch(`${apiUrl}/v1/audit-logs?limit=100`, { cache: "no-store" });
-    if (!res.ok) return [];
-    return (await res.json()) as AuditEntry[];
-  } catch (_err) {
-    return [];
-  }
-}
+export default function AuditLogsPage() {
+  const apiUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000", []);
+  const [logs, setLogs] = useState<AuditEntry[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function AuditLogsPage() {
-  const logs = await loadAuditLogs();
+  useEffect(() => {
+    const token = localStorage.getItem("vibeaff_token");
+    fetch(`${apiUrl}/v1/audit-logs?limit=100`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => setLogs(data))
+      .catch(() => setLogs([]))
+      .finally(() => setLoading(false));
+  }, [apiUrl]);
+
   return (
-    <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-      <h1 className="text-lg font-semibold">Audit logs</h1>
-      <p className="mt-3 text-sm text-zinc-400">
+    <section className="glass-card p-6">
+      <h1 className="section-header text-lg">Audit logs</h1>
+      <p className="mt-3 text-sm text-[#8B8B9E]">
         Recent platform actions for compliance and debugging.
       </p>
       <div className="mt-6 space-y-2 text-sm">
-        {logs.length === 0 && (
-          <p className="text-zinc-400">No audit entries yet.</p>
+        {loading && (
+          <div className="space-y-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="skeleton h-12 w-full" />
+            ))}
+          </div>
+        )}
+        {!loading && logs.length === 0 && (
+          <p className="text-[#8B8B9E] text-center py-8">No audit entries yet.</p>
         )}
         {logs.map((log) => (
-          <div key={log.id} className="flex flex-col gap-1 rounded-xl border border-white/10 bg-black/30 p-3 md:flex-row md:items-center md:justify-between">
+          <div key={log.id} className="table-row flex-col gap-1 md:flex-row">
             <div>
-              <span className="text-white">{log.action}</span>
-              <span className="ml-2 text-zinc-400">{log.entity}{log.entityId ? ` #${log.entityId.slice(0, 8)}` : ""}</span>
+              <span className="text-[#F6F6F7] font-medium">{log.action}</span>
+              <span className="ml-2 text-[#8B8B9E]">{log.entity}{log.entityId ? ` #${log.entityId.slice(0, 8)}` : ""}</span>
             </div>
-            <div className="text-xs text-zinc-500">
+            <div className="text-xs text-[#8B8B9E]/60">
               {new Date(log.createdAt).toLocaleString()}
               {log.ipAddress ? ` · ${log.ipAddress}` : ""}
             </div>
