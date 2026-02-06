@@ -962,7 +962,7 @@ export default function DeveloperPortal() {
   return (
     <div className={`min-h-screen ${t.bg} ${t.text} ${matrix ? "matrix-mode" : ""}`}>
       <MatrixRain visible={matrix} />
-      {matrix && <div className="fixed inset-0 bg-black/80 z-[1] pointer-events-none" />}
+      {matrix && <div className="fixed inset-0 bg-black/70 z-[1] pointer-events-none" />}
 
       {/* ── SIDEBAR ────────────────────────────────── */}
       <aside

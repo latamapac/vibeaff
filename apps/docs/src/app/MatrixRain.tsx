@@ -55,15 +55,15 @@ export default function MatrixRain({ visible }: MatrixRainProps) {
       ctx.font = `${fontSize}px monospace`;
 
       for (let i = 0; i < drops.length; i++) {
-        // Skip ~70% of columns each frame → lower density
-        if (Math.random() > 0.3) continue;
+        // Skip ~50% of columns each frame → balanced density
+        if (Math.random() > 0.5) continue;
 
         const char = charArr[Math.floor(Math.random() * charArr.length)];
         const x = i * fontSize;
         const y = drops[i]! * fontSize;
 
-        // Subtle fixed opacity
-        ctx.globalAlpha = 0.3;
+        // Visible opacity
+        ctx.globalAlpha = 0.7;
         ctx.fillText(char, x, y);
         ctx.globalAlpha = 1;
 
@@ -90,7 +90,6 @@ export default function MatrixRain({ visible }: MatrixRainProps) {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 z-0 pointer-events-none"
-      style={{ background: "#09090b" }}
     />
   );
 }
